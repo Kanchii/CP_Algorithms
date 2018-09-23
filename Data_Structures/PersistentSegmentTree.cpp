@@ -20,7 +20,6 @@ Tree *createNode(){
 
 Tree *update(Tree *&orig, Tree *&u, int l, int r, int dest, int value){
     if(l == r){
-        if(l != r) return NULL;
         Tree *v = createNode();
         v -> soma = value;
         u = v;
