@@ -2,12 +2,14 @@
 
 using namespace std;
 
+typedef long long ll;
+
 struct Node {
     Node *l, *r;
-    int key, prior;
-    int num_child;
-    int lazy;
-    int sum;
+    ll key, prior;
+    ll num_child;
+    ll lazy;
+    ll sum;
 };
 
 int cnt(Node *t){
@@ -35,8 +37,8 @@ void update_Sum(Node * &t){
         if(!(t -> l) and !(t -> r)){
             t -> sum = t -> key;
         } else {
-            int sumL = t -> l ? (t -> l -> sum) : 0;
-            int sumR = t -> r ? (t -> r -> sum) : 0;
+            ll sumL = t -> l ? (t -> l -> sum) : 0;
+            ll sumR = t -> r ? (t -> r -> sum) : 0;
             t -> sum = t -> key + sumL + sumR;
         }
     }
@@ -102,16 +104,17 @@ void erase(Node * &t, int idx){
     update_Sum(t);
 }
 
-int range_Query(Node *root, int l, int r){
+ll range_Query(Node *root, int l, int r){
     Node *left, *mid, *right;
     split(root, l - 1, left, mid, 0);
     // cout << left -> sum << " " << mid -> sum << endl;
     split(mid, r, root, right, l);
-    cout << "Soma no intervalo [" << l << ", " << r << "] = " << root -> sum << endl;
+    ll res = root -> sum;
+    // cout << "Soma no intervalo [" << l << ", " << r << "] = " << root -> sum << endl;
     merge(mid, left, root);
     merge(root, mid, right);
 
-    return root -> sum;
+    return res;
 }
 
 void range_Update(Node * &root, int l, int r, int val){
@@ -136,60 +139,37 @@ Node *create_Node(int x){
 
 
 int main(int argc, char const *argv[]) {
+    ios_base::sync_with_stdio(false);
     srand(time(NULL));
-    int vet[] = {-1, 2, 0, 3, 5, 2};
-    int n = 6;
+    int t;
+    cin >> t;
+    while(t--){
+        int n, m;
+        cin >> n >> m;
 
-    Node *root = NULL;
-
-    for(int i = 0 ; i < n; i++){
-        Node *aux = create_Node(vet[i]);
-        insert(root, aux, i);
-        // cout << i << " " << root -> sum << endl;
-    }
-
-    print_Tree(root);
-    cout << endl;
-
-    for(int i = 0; i < n; i++){
-        for(int j = i; j < n; j++){
-            range_Query(root, i, j);
+        Node *root = NULL;
+        for(int i = 0 ; i < n; i++){
+            Node *aux = create_Node(0);
+            insert(root, aux, i);
+            // cout << i << " " << root -> sum << endl;
         }
-    }
 
-    range_Update(root, 1, 3, 3);
-    cout << endl;
-
-    // Vet = [-1, 5, 3, 6, 5, 2]
-
-    for(int i = 0; i < n; i++){
-        for(int j = i; j < n; j++){
-            range_Query(root, i, j);
+        for(int i = 0; i < m; i++){
+            int tipo; cin >> tipo;
+            if(tipo == 0){
+                int a, b, c;
+                cin >> a >> b >> c;
+                a--; b--;
+                range_Update(root, a, b, c);
+            } else {
+                int a, b;
+                cin >> a >> b;
+                a--; b--;
+                cout << range_Query(root, a, b) << endl;
+            }
         }
+
+        free(root);
     }
-    //
-    // Node *aux = create_Node(6);
-    // insert(root, aux, 3);
-    // Vetor = [-1, 2, 0, 6, 3, 5, 2]
-    // n++;
-    // cout << endl;
-    // for(int i = 0; i < n; i++){
-    //     for(int j = i; j < n; j++){
-    //         range_Query(root, i, j);
-    //     }
-    // }
-    // cout << endl;
-
-    print_Tree(root);
-    cout << endl;
-
-    erase(root, 3);
-    n--;
-
-    print_Tree(root);
-    cout << endl;
-
-    free(root);
-
     return 0;
 }
